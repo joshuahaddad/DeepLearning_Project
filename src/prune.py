@@ -100,9 +100,9 @@ class LeNet(nn.Module):
         x = self.fc3(x)
         return x
     
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+"""device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = LeNet().to(device=device)
 pruner = Pruner(model, "configs/example.yml", False)
 pruner.prune_model()
 print(dict(model.named_buffers()).keys())
-print(dict(pruner.model.named_buffers()).keys())
+print(dict(pruner.model.named_buffers()).keys())"""
