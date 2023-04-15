@@ -6,21 +6,21 @@ from matplotlib.pyplot import imread
 import platform
 import pickle
 
-def load_pickle(f):
+def load_pickle(f, enc='latin1'):
     version = platform.python_version_tuple()
     if version[0] == '2':
         return pickle.load(f)
     elif version[0] == '3':
-        return pickle.load(f, encoding='latin1')
+        return pickle.load(f, encoding=enc)
     raise ValueError("invalid python version: {}".format(version))
 
 def load_CIFAR_batch(filename):
     """ load single batch of cifar """
     with open(filename, 'rb') as f:
         datadict = load_pickle(f)
-        X = datadict['data'] 
-        Y = datadict['coarse_labels']
-        X = X.reshape(len(X), 3, 32, 32).transpose(0, 2, 3, 1).astype("float")
+        X = datadict['data']
+        Y = datadict['fine_labels']
+        X = X.reshape(len(X), 3, 32, 32).transpose(0, 2, 3, 1)
         Y = np.array(Y)
         return X, Y
 
@@ -29,7 +29,10 @@ def load_CIFAR100(ROOT):
     """ load cifar dataset for train and test """
     Xtr, Ytr = load_CIFAR_batch(os.path.join(ROOT, 'train'))
     Xte, Yte = load_CIFAR_batch(os.path.join(ROOT, 'test'))
-    return Xtr, Ytr, Xte, Yte
+    with open(os.path.join(ROOT, 'meta'), 'rb') as f:
+        meta = load_pickle(f)
+        meta = {i: val for i, val in enumerate(meta['fine_label_names'])}
+    return Xtr, Ytr, Xte, Yte, meta
 
 
 def get_CIFAR100_data(num_training=49000, num_validation=1000, num_test=1000,
@@ -41,7 +44,8 @@ def get_CIFAR100_data(num_training=49000, num_validation=1000, num_test=1000,
     """
     # Load the raw CIFAR-10 data
     cifar100_dir = './data/cifar-100-python/'
-    X_train, y_train, X_test, y_test = load_CIFAR100(cifar100_dir)
+    X_train, y_train, X_test, y_test, meta = load_CIFAR100(cifar100_dir)
+
     # Subsample the data
     mask = list(range(num_training, num_training + num_validation))
     X_val = X_train[mask]
@@ -60,16 +64,19 @@ def get_CIFAR100_data(num_training=49000, num_validation=1000, num_test=1000,
         X_val -= mean_image
         X_test -= mean_image
 
+    
+    
     # Transpose so that channels come first
-    X_train = X_train.transpose(0, 3, 1, 2).copy()
-    X_val = X_val.transpose(0, 3, 1, 2).copy()
-    X_test = X_test.transpose(0, 3, 1, 2).copy()
+    # X_train = X_train.transpose(0, 3, 1, 2).copy()
+    # X_val = X_val.transpose(0, 3, 1, 2).copy()
+    # X_test = X_test.transpose(0, 3, 1, 2).copy()
 
     # Package data into a dictionary
     return {
         'X_train': X_train, 'y_train': y_train,
         'X_val': X_val, 'y_val': y_val,
         'X_test': X_test, 'y_test': y_test,
+        'label_map': meta
     }
 
 
@@ -272,9 +279,11 @@ def load_images(num=None, deterministic=False):
         print('bash get_imagenet_val.sh')
         assert False, 'Need to download imagenet_val_25.npz'
     f = np.load(imagenet_fn, allow_pickle=True)
-    X = f['X']
-    y = f['y']
-    class_names = f['label_map'].item()
+    f = get_CIFAR100_data(subtract_mean=False)
+    X = f['X_val']
+    y = f['y_val']
+    class_names = f['label_map']
+    print(X.shape)
     labels = []
     ids = np.random.choice(25, size=5, replace=False) 
     if num is not None:

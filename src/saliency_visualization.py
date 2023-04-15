@@ -100,20 +100,20 @@ class SaliencyMap:
         if verbose:
             plt.show()
 
-def run_program(prune_config, global_prune=False, suffix="Full", verbose=False):
-    # Check for GPU support
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = models.squeezenet1_1(weights='SqueezeNet1_1_Weights.DEFAULT').to(device)
-    pruner = Pruner(model, prune_config, global_prune)
-    model = pruner.prune_model()
-    
-    for param in model.parameters():
-        param.requires_grad = False
+    def run_program(self, prune_config, global_prune=False, suffix="Full", verbose=False):
+        # Check for GPU support
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        model = models.squeezenet1_1(weights='SqueezeNet1_1_Weights.DEFAULT').to(device)
+        pruner = Pruner(model, prune_config, global_prune)
+        model = pruner.prune_model()
+        
+        for param in model.parameters():
+            param.requires_grad = False
 
-    # Get data and instantiate SaliencyMap
-    X, y, labels, class_names = load_images(num=5, deterministic=True)
-    sm = SaliencyMap()
-    sm.show_saliency_maps(X, y, labels, model, suffix=suffix, verbose=verbose)
+        # Get data and instantiate SaliencyMap
+        X, y, labels, class_names = load_images(num=5, deterministic=True)
+        sm = SaliencyMap()
+        sm.show_saliency_maps(X, y, labels, model, suffix=suffix, verbose=verbose)
     
 if __name__ == '__main__':
     # Check for GPU support

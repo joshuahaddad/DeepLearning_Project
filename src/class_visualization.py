@@ -133,47 +133,47 @@ class ClassVisualization:
                     plt.savefig('visualization/class_visualization_iter_{}'.format(t + 1), bbox_inches='tight')
         return deprocess(img.cpu())
 
-def run_program(prune_config, global_prune=False, suffix="Full", verbose=False):
-    # Check for GPU support
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = models.squeezenet1_1(weights='SqueezeNet1_1_Weights.DEFAULT').to(device)
-    pruner = Pruner(model, prune_config, global_prune)
-    model = pruner.prune_model()
-    for param in model.parameters():
-        param.requires_grad = False
+    def run_program(self, prune_config, global_prune=False, suffix="Full", verbose=False):
+        # Check for GPU support
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        model = models.squeezenet1_1(weights='SqueezeNet1_1_Weights.DEFAULT').to(device)
+        pruner = Pruner(model, prune_config, global_prune)
+        model = pruner.prune_model()
+        for param in model.parameters():
+            param.requires_grad = False
 
-    cv = ClassVisualization()
-    X, y, labels, class_names = load_images(num=5, deterministic=True)
-    visuals = []
-    for target in tqdm(y, desc="Creating class visualization", leave=True):
-        out = cv.create_class_visualization(target, class_names, model, generate_plots=False)
-        visuals.append(out)
+        cv = ClassVisualization()
+        X, y, labels, class_names = load_images(num=5, deterministic=True)
+        visuals = []
+        for target in tqdm(y, desc="Creating class visualization", leave=True):
+            out = cv.create_class_visualization(target, class_names, model, generate_plots=False)
+            visuals.append(out)
 
-    # Create a figure and a subplot with 2 rows and 4 columns
-    fig, ax = plt.subplots(2, 5, figsize=(12, 6))
-    fig.subplots_adjust(left=0.03, right=0.97, bottom=0.03, top=0.92, wspace=0.2, hspace=0.2)
+        # Create a figure and a subplot with 2 rows and 4 columns
+        fig, ax = plt.subplots(2, 5, figsize=(12, 6))
+        fig.subplots_adjust(left=0.03, right=0.97, bottom=0.03, top=0.92, wspace=0.2, hspace=0.2)
 
-    # Loop over the subplots and plot an image in each one
-    for i in tqdm(range(2), desc="Creating plots", leave=True):
-        for j in range(5):
-            # Load image
-            if i == 0:
-                image = X[j]
-            elif i == 1:
-                image = visuals[j]
+        # Loop over the subplots and plot an image in each one
+        for i in tqdm(range(2), desc="Creating plots", leave=True):
+            for j in range(5):
+                # Load image
+                if i == 0:
+                    image = X[j]
+                elif i == 1:
+                    image = visuals[j]
 
-            # Plot the image in the current subplot
-            ax[i, j].imshow(image, cmap='bone')
-            ax[i, j].axis('off')
+                # Plot the image in the current subplot
+                ax[i, j].imshow(image, cmap='bone')
+                ax[i, j].axis('off')
 
-            # Add a label above each image in the bottom row
-            if i == 1:
-                ax[i, j].set_title(labels[j].title(), fontsize=12, y=1.2)
+                # Add a label above each image in the bottom row
+                if i == 1:
+                    ax[i, j].set_title(labels[j].title(), fontsize=12, y=1.2)
 
-    # Save and display the subplots
-    plt.savefig("./visualization/class_viz/class_visualization_{suffix}.png")
-    if verbose:
-        plt.show()
+        # Save and display the subplots
+        plt.savefig("./visualization/class_viz/class_visualization_{suffix}.png")
+        if verbose:
+            plt.show()
 
 if __name__ == '__main__':
     # Check for GPU support

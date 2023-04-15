@@ -8,7 +8,7 @@ method: "L1Unstructured"
 local_pruning:
   
   # 20% of conv weights and 40% of Linear weights are pruned
-  Conv2d: ['weight', 0.50]
+  Conv2d: ['weight', 0.10]
   Linear: ['weight', 0.40]
 
 # Global pruning prunes the entire model to have a set sparsity instead of pruning each layer to have a set sparsity
