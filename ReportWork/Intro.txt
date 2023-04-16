@@ -1,0 +1,56 @@
+Introduction / Background / Motivation:
+o (5 points) What did you try to do? What problem did you try to solve? Articulate your objectives
+using absolutely no jargon.
+
+The original plan for our project was to investigate how various hyperparameters behave and influence the training, metrics,
+space contraints, as well as other intriguing characteristics when training a model. We started with the Open Catalyst Project
+which is a large multi year effort that is investigating chemical compositions and interations, to try and help find new combinations
+to address the effects of climate change. After a significant effort in getting the code environment to work, we found that the sheer size
+and un-optimized data loading process of hundreds of giga-bytes of data, and the assumption that there were hundereds of GPUs available
+to use in training, our original plan and scope was out of reach. With this finding, and realization of impossibility for the scope of
+our project, we decided to pivot the focus to something that we thought might also be useful in the scope of the original project, but
+would also be exploreable in the scope of our timeline. With this explanation, we chose to investigate the aspect of pruning, which is a
+method to reduce complexity, and size of trained models. In order explor this functionality thouroghly, we started with image processeing
+that we are familiar with from prior projects, Saliency, and GradCAM in order to visualize how various pruning methods and severities change
+model outputs and behaviors as metioned above.
+
+
+References: 
+https://towardsdatascience.com/how-to-prune-neural-networks-with-pytorch-ebef60316b91
+https://olegpolivin.medium.com/experiments-in-neural-network-pruning-in-pytorch-c18d5b771d6d
+https://nni.readthedocs.io/en/stable/compression/pruner.html
+
+
+
+o (5 points) How is it done today, and what are the limits of current practice?
+There are numerous pruning algorithms that are regarded as standard approaches such as weight pruning, neuron pruning, filter and more. 
+Each of these approaches has various pros and cons, while the list is long and there are many facets to each algorithm or approach in 
+pruning, a rough classification is that the pros are reduction in space requirements, reduction of computational complexity, modularity 
+of techniques to be able to be used in conjunction with others. While the cons can be summed up by the following, loss of accuracy, loss 
+of information, as well as being potentially computationally expensive.
+
+References:
+https://nni.readthedocs.io/en/stable/compression/pruner.html
+
+
+o (5 points) Who cares? If you are successful, what difference will it make?
+This leads back to one of the earlier points about how this project has the assumption that there are hundreds of GPUs that are available
+to you, which is a massive barrier to entry in the exploration of new model architectures, different alogorithm approaches, as well as 
+more experiments in general. This can lead to stagnation of innovation, due to the inability for people to explore and test easily. If 
+this proof of concept is succesful this means that there can be a plethora of extremely large models that are trained on the hundreds
+of GPUs on the scale of days. This could then be used in some future state of the project that would have a pruning infastructure to 
+have various starting points that would be able to function and experiment on only having minimal physical hardware such as a single GPU.
+
+
+o (5 points) What data did you use? Provide details about your data, specifically choose the most
+important aspects of your data mentioned here: Datasheets for Datasets
+(https://arxiv.org/abs/1803.09010). Note that you do not have to choose all of them, just the most
+relevant
+As part of our original anticipation we were going to be using the data download links in the repository for the hundreds of GB that the 
+data is. As mentioned earlier though there were numerous issues in getting it setup in a reasonable manner in order to build our 
+experiments onto. Due to this issue, we had to pivot our data from the OCP data to image data that we are much more familiar with, such 
+as CIFAR image data that we have used several times and are much more familiar with.
+
+##This will need more with some more specifics
+
+
