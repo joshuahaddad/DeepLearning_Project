@@ -1,0 +1,7 @@
+Approach:
+o (10 points) What did you do exactly? How did you solve the problem? Why did you think it would
+be successful? Is anything new in your approach?
+
+
+o (5 points) What problems did you anticipate? What problems did you encounter? Did the very first
+thing you tried work?
