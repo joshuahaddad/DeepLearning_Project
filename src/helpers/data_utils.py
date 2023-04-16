@@ -283,7 +283,6 @@ def load_images(num=None, deterministic=False):
     X = f['X_val']
     y = f['y_val']
     class_names = f['label_map']
-    print(X.shape)
     labels = []
     ids = np.random.choice(25, size=5, replace=False) 
     if num is not None:
