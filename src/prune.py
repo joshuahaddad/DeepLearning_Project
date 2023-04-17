@@ -26,8 +26,8 @@ class Pruner():
     
     def prune_model(self, retrain=False, **kwargs):
         
-        print("Validating Pre-Pruning")
-        self.validate_model()
+        # print("Validating Pre-Pruning")
+        # self.validate_model()
         if self.global_pruning:
             method = get_global_method(self.config)
             parameters_to_prune = get_global_params(self.model, self.config)
@@ -44,7 +44,11 @@ class Pruner():
             for name, module in self.model.named_modules():
                 for layer_inst, params in pruning_dict.items():
                     if isinstance(module, layer_inst):
-                        method(module, name=params[0], amount=params[1])
+                        
+                        if 'kwargs' in self.config.keys():
+                            method(module, name=params[0], amount=params[1], **self.config['kwargs'])
+                        else:
+                            method(module, name=params[0], amount=params[1])
         
         if retrain:
             self.train_model(**kwargs)
@@ -95,7 +99,7 @@ class Pruner():
                                             transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.1, hue=0.1),
                                             transforms.RandomAffine(degrees=40, translate=None, scale=(1, 2), shear=15),
                                             transforms.ToTensor(),
-                                            transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
+                                            transforms.Normalize((0.507, 0.4865, 0.4409), (0.2673, 0.2564, 0.2761))
                                         ])
             trainset = torchvision.datasets.CIFAR100(root="./data", download=False, transform=transform, train=True)
             testset = torchvision.datasets.CIFAR100(root="./data", download=False, transform=transform, train=False)
@@ -142,14 +146,16 @@ def get_global_params(model, config):
 
 def get_global_method(config):
     method_dict = {
-        'L1Unstructured': prune.L1Unstructured
+        'L1Unstructured': prune.L1Unstructured,
+        'LnStructured': prune.LnStructured
     }
     
     return method_dict[config['method']]
 
 def get_local_method(config):
     method_dict = {
-        'L1Unstructured': prune.l1_unstructured
+        'L1Unstructured': prune.l1_unstructured,
+        'LnStructured': prune.ln_structured
     }
     
     return method_dict[config['method']]

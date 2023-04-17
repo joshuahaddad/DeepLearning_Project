@@ -12,22 +12,23 @@ from prune import *
 
 class GradCAM():
     
-    def __init__(self, X):
-        self.X = X
+    def __init__(self):
+        pass
 
-    def gradcam(self, prune_config=None, global_prune=False):
+    def gradcam(self, model, prune_config=None, global_prune=False):
 
         # Define a preprocessing function to resize the image and normalize its pixels
         preprocess = transforms.Compose([
-            transforms.Resize((224, 224)),
+            transforms.Resize((32,32)),
             transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                std=[0.229, 0.224, 0.225])
+            transforms.Normalize((0.507, 0.4865, 0.4409), (0.2673, 0.2564, 0.2761))
         ])
 
         # Check for GPU support
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        model = models.squeezenet1_1(weights='SqueezeNet1_1_Weights.DEFAULT').to(device)
+        
+        if not model:
+            model = models.squeezenet1_1(weights='SqueezeNet1_1_Weights.DEFAULT').to(device)
         
         if prune_config:
             pruner = Pruner(model, prune_config, global_prune)
@@ -38,7 +39,7 @@ class GradCAM():
         # convolutional layer. Then register the hook to get the feature maps        #
         ##############################################################################
         
-        last_conv = model.features[-1]
+        last_conv = model.features[-2]
         def fw_hook(module, input, output):
             self.out_conv = output
         
@@ -53,7 +54,6 @@ class GradCAM():
         gradcams = []
         for x in self.X:
             # Load an input image and perform pre-processing
-            print(x.shape)
             image = Image.fromarray(x)
             x = preprocess(image).unsqueeze(0).to(device)
 
@@ -77,7 +77,7 @@ class GradCAM():
             L = self.out_conv * alpha[:,:, None, None]
             with torch.no_grad():
                 heatmap = torch.sum(L, dim=(0,1))
-                heatmap = cv2.resize(heatmap.cpu().numpy(), (224,224))
+                heatmap = cv2.resize(heatmap.cpu().numpy(), (32,32))
 
 
             ##############################################################################
@@ -89,18 +89,19 @@ class GradCAM():
 
         return gradcams
 
-    def run_program(self, prune_config, global_prune=False, suffix="Full", verbose=False):
+    def run_program(self, model, prune_config=None, global_prune=False, suffix="Full", verbose=False):
         # Retrieve images
         X, y, labels, class_names = load_images(num=5, deterministic=True)
-        gc = GradCAM(X)
-        gradcams = gc.gradcam()
+        self.X = X
+        gradcams = self.gradcam(model, prune_config=prune_config, global_prune=global_prune)
+        
         # Create a figure and a subplot with 2 rows and 4 columns
         fig, ax = plt.subplots(2, 5, figsize=(12, 6))
         fig.subplots_adjust(left=0.03, right=0.97, bottom=0.03, top=0.92, wspace=0.2, hspace=0.2)
 
         # Loop over the subplots and plot an image in each one
-        for i in tqdm(range(2), desc="Creating plots", leave=True):
-            for j in tqdm(range(5), desc="Processing image", leave=True):
+        for i in tqdm.tqdm(range(2), desc="Creating plots", leave=True):
+            for j in tqdm.tqdm(range(5), desc="Processing image", leave=True):
                 # Load image
                 if i == 0:
                     item = gradcams[j]
@@ -122,7 +123,7 @@ class GradCAM():
                     ax[i, j].set_title(labels[j].title(), fontsize=12, y=1.2)
 
         # Save and display the subplots
-        plt.savefig("./visualization/gradcam_viz/gradcam_visualization_{suffix}.png")
+        plt.savefig(f"./visualization/gradcam_viz/gradcam_visualization_{suffix}.png")
         
         if verbose:
             plt.show()
