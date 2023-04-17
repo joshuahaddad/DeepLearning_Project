@@ -75,10 +75,21 @@ o (5 points) What data did you use? Provide details about your data, specificall
 important aspects of your data mentioned here: Datasheets for Datasets
 (https://arxiv.org/abs/1803.09010). Note that you do not have to choose all of them, just the most
 relevant
-As part of our original anticipation we were going to be using the data download links in the repository for the hundreds of GB that the 
-data is. As mentioned earlier though there were numerous issues in getting it setup in a reasonable manner in order to build our 
+
+For the initial investigation into the OCP models we made use of the OC22 s2ef and is2rs datasets and the gemnet-oc model [1]. Both datasets proved to be
+difficult to compute despite the is2rs datset being significantly smaller than the s2ef dataset due to requiring a very low batch size to satisfy memory constraints. 
+When moving away from the OCP dataset we chose to use the CIFAR-100 dataset [2]. We chose CIFAR-100 because it is a challenging image dataset, due to many categories with
+minimal examples and low resolution. To focus on the visualization of the effects of pruning we used a pre-trained VGG16 model with baseline 74% Top-1 Accuracy and 
+15.3M parameters [3]. We chose to use VGG16 as it has very high accuracy and a large number of parameters that could be pruned.
+
+As mentioned earlier though there were numerous issues in getting it setup in a reasonable manner in order to build our 
 experiments onto. Due to this issue, we had to pivot our data from the OCP data to image data that we are much more familiar with, such 
 as CIFAR image data that we have used several times and are much more familiar with.
+
+References:
+[1] https://github.com/Open-Catalyst-Project/ocp/blob/main/DATASET.md#structure-to-total-energy-and-forces-s2ef-total-task
+[2] https://www.cs.toronto.edu/~kriz/cifar.html
+[3] https://github.com/chenyaofo/pytorch-cifar-models
 
 ##This will need more with some more specifics
 
