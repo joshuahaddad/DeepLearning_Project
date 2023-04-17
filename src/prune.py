@@ -52,6 +52,8 @@ class Pruner():
         
         if retrain:
             self.train_model(**kwargs)
+        else:
+            self.validate_model()
         
         return self.model
 
@@ -88,6 +90,7 @@ class Pruner():
                 loop.set_postfix(loss=loss, acc=correct/total)
                 
         print(f'Accuracy of the network on the CIFAR100 test images: {100 * correct // total} %')
+        self.val_acc = 100 * correct // total
     
     def train_model(self, opt_args=None, trainset=None, criterion=nn.CrossEntropyLoss(), **kwargs):
         """print("Validating Pre Retrain")
@@ -130,7 +133,8 @@ class Pruner():
                 running_loss += loss.item()
                 loop.set_description(f"Epoch [{epoch}/{NUM_EPOCHS}]")
                 loop.set_postfix(loss=loss)
-        self.validate_model()
+                
+        self.val_acc = self.validate_model()
         
             
 

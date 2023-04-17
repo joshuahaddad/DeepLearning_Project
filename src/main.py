@@ -28,7 +28,7 @@ def run_gradcams(config_prefix, folder, retrain=False):
     data = []
     for i in range(11):  
         gcv = GradCAM()
-        gcv.run_program(model, prune_config=f"{config_prefix}/{i*10}.yaml", suffix=i, folder=folder, retrain=retrain)
+        gcv.run_program(model, prune_config=f"{config_prefix}/{i*10}.yaml", suffix=i*10, folder=folder, retrain=retrain)
         
 
 def run_saliency():
@@ -38,7 +38,7 @@ def run_class_viz():
     return
 
 def generate_gifs(folder):
-    filenames = [f"{i*10}.png" for i in range(11)]
+    filenames = [f"{i}.png" for i in range(11)]
     ims = [imageio.imread(f"./visualization/gradcam_viz/{folder}/{f}") for f in filenames]
     imageio.mimwrite(f"./visualization/gifs/{folder}/gradcam.gif", ims, duration=0.5)
     
