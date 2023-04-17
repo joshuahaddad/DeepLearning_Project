@@ -3,16 +3,18 @@ o (5 points) What did you try to do? What problem did you try to solve? Articula
 using absolutely no jargon.
 
 The original plan for our project was to investigate how various hyperparameters behave and influence the training, metrics,
-space contraints, as well as other intriguing characteristics when training a model. We started with the Open Catalyst Project
-which is a large multi year effort that is investigating chemical compositions and interations, to try and help find new combinations
+space contraints, as well as other intriguing characteristics when training a model. We started with the Open Catalyst Project (OCP),
+which is a large multi-year effort that is investigating chemical compositions and interations to try and help find new combinations
 to address the effects of climate change. After a significant effort in getting the code environment to work, we found that the sheer size
-and un-optimized data loading process of hundreds of giga-bytes of data, and the assumption that there were hundereds of GPUs available
-to use in training, our original plan and scope was out of reach. With this finding, and realization of impossibility for the scope of
-our project, we decided to pivot the focus to something that we thought might also be useful in the scope of the original project, but
-would also be exploreable in the scope of our timeline. With this explanation, we chose to investigate the aspect of pruning, which is a
-method to reduce complexity, and size of trained models. In order explor this functionality thouroghly, we started with image processeing
-that we are familiar with from prior projects, Saliency, and GradCAM in order to visualize how various pruning methods and severities change
-model outputs and behaviors as metioned above.
+of the data and models required multiple GPUs worth of vRAM and thousands of GPU hours to train a single model, with a single GTX 4090 taking
+approximately 11 hours to complete one epoch of training. Due to these computational requirements, our original plan and scope was out of reach. 
+With this finding, we decided to pivot the focus to reduction in model complexity using pruning such that we could explore a topic within the timeline.
+Pruning a neural network involves reducing model complexity by removing parameters, connections, or layers of the network. In our work we pruned parameters.
+To investigate pruning, we first attempted to lower the computational requirements by pruning the OCP models. This proved insufficient as sparse operations
+were not supported, meaning the pruning only lowered model complexity but not computational requirements. Thus, we chose to investigate model degradation
+due to pruning focusing on the VGG16 architecture trained on the CIFAR100 dataset. To investigate the model degradation we attempted to use visualization
+techniques of class image generation, saliency maps, and GradCAM investigated in earlier work. By applying these visualization techniques to pruned models
+we hoped to expand quantitative measures of model degradation with qualitative descriptions the effect of pruning on image classifiers.
 
 
 References: 
@@ -23,23 +25,50 @@ https://nni.readthedocs.io/en/stable/compression/pruner.html
 
 
 o (5 points) How is it done today, and what are the limits of current practice?
-There are numerous pruning algorithms that are regarded as standard approaches such as weight pruning, neuron pruning, filter and more. 
-Each of these approaches has various pros and cons, while the list is long and there are many facets to each algorithm or approach in 
-pruning, a rough classification is that the pros are reduction in space requirements, reduction of computational complexity, modularity 
-of techniques to be able to be used in conjunction with others. While the cons can be summed up by the following, loss of accuracy, loss 
-of information, as well as being potentially computationally expensive.
+As mentioned previously, pruning algorithms can modify various aspects of the neural network to reduce complexity and can range from
+parameter reduction, structure complexity reduction, and lowering numerical precision within a network [1]. Current approaches attempt to train
+a large model with greater than adequate accuracy, prune the model to a desired size, and retrain the model to fine tune the weights post-pruning.
+Recent attempts have used joint-training of the parent model with the smaller child models using a shared weight matrix in order to train an un-pruned
+large model that can be pruned and produce efficient networks without the need for retraining [2]. Others have attempted to use quantization to convert
+a full-precision model to a lower-precision model while mainatining accuracy close to the original model [3]. Other work attempts to generate different
+methods and criterion to optimize the pruned model effectiveness measured through quantitative means and prediction visualization [4-6].
+Efforts to visualize pruning methods in the past have focused on visualizing feature representations, the pruning process, and describing summary 
+statistics related to the pruning [7-8]. While this leads to efficient pruning algorithms in terms of model performance post-pruning, they provide
+limited delivery of interpretability and understandability for how the model degrades or why the performance of the pruned model is comparable to the
+parent model. 
 
 References:
-https://nni.readthedocs.io/en/stable/compression/pruner.html
+[1] https://nni.readthedocs.io/en/stable/compression/pruner.html
+[2] https://arxiv.org/pdf/1908.09791.pdf
+[3] https://arxiv.org/pdf/1702.03044.pdf
+[4] https://www.sciencedirect.com/science/article/pii/S0031320321000868
+[5] https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8914711/
+[6] https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8950981/
+[7] https://arxiv.org/pdf/2205.15731.pdf
+[8] https://arxiv.org/pdf/2009.09940.pdf
+
 
 
 o (5 points) Who cares? If you are successful, what difference will it make?
-This leads back to one of the earlier points about how this project has the assumption that there are hundreds of GPUs that are available
-to you, which is a massive barrier to entry in the exploration of new model architectures, different alogorithm approaches, as well as 
-more experiments in general. This can lead to stagnation of innovation, due to the inability for people to explore and test easily. If 
-this proof of concept is succesful this means that there can be a plethora of extremely large models that are trained on the hundreds
-of GPUs on the scale of days. This could then be used in some future state of the project that would have a pruning infastructure to 
-have various starting points that would be able to function and experiment on only having minimal physical hardware such as a single GPU.
+Recent advances of deep learning models have shown numerous models reaching into trillions of parameters such as GPT-4 [1]. As mentioned in the introduction,
+the OCP models also had a significant number of parameters, leading to the requirement of thousands of GPU hours of computation to train a single model [2].
+This level of compute presents novel challenges for personal, organizational, and societal use of AI to solve problems and advance innovation. Public perception of
+AI models like is important to driving engagement, and some reporting of GPT-4 refers to the model as a "bloated, pointles mess" [3]. Training these large models can
+also contribute to climate change, with a single large transformer model being estimated to emit approximately 6 cars worth of CO2 [4]. Inference using machine learning
+models also represents a computational cost and considerable effort has been made to investigate efficient inference methods and energy costs [5, 6]. 
+Finally, reliance on large models with large compute requirements as the state of the art presents a barrier to entry for prospective researchers and is bottleneck to 
+investigation as a single training epoch can require many hours of GPU time to complete which represents a large time and monetary cost to training. 
+This project sought to contribute to providing tools that would enable more efficient models to be produced with fewer iterations, while maitaining interpretability.
+
+
+References:
+[1] https://openai.com/research/gpt-4
+[2] https://arxiv.org/pdf/2206.08917.pdf
+[3] https://www.theatlantic.com/technology/archive/2023/03/openai-gpt-4-parameters-power-debate/673290/
+[4] https://arxiv.org/pdf/1906.02243.pdf
+[5] https://www.sciencedirect.com/science/article/pii/S2210537923000124
+[6] https://dl.acm.org/doi/pdf/10.1145/3472883.3486993
+
 
 
 o (5 points) What data did you use? Provide details about your data, specifically choose the most
