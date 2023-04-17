@@ -94,7 +94,6 @@ class Pruner():
         self.validate_model()"""
         if not trainset:
             transform = transforms.Compose([
-                                            transforms.Resize((224, 224)),
                                             transforms.RandomHorizontalFlip(),
                                             transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.1, hue=0.1),
                                             transforms.RandomAffine(degrees=40, translate=None, scale=(1, 2), shear=15),
@@ -102,22 +101,21 @@ class Pruner():
                                             transforms.Normalize((0.507, 0.4865, 0.4409), (0.2673, 0.2564, 0.2761))
                                         ])
             trainset = torchvision.datasets.CIFAR100(root="./data", download=False, transform=transform, train=True)
-            testset = torchvision.datasets.CIFAR100(root="./data", download=False, transform=transform, train=False)
         
         if not opt_args:
             opt_args={'lr': 0.001, 'momentum': 0.9, 'epochs': 5, 'batch_size': 128}
             
         trainloader = torch.utils.data.DataLoader(trainset,
-                                                 batch_size=opt_args['batch_size'],
+                                                 batch_size=opt_args.pop('batch_size'),
                                                  shuffle=True)
         
         
         
-        
-        optim = torch.optim.Adam(self.model.parameters(), lr = opt_args['lr'])
+        NUM_EPOCHS = opt_args.pop('epochs')
+        optim = torch.optim.SGD(self.model.parameters(), **opt_args)
         running_loss = 0.0
         n_total_step = len(trainloader)
-        NUM_EPOCHS = opt_args['epochs']
+        
         
         for epoch in range(NUM_EPOCHS):
             loop = tqdm.tqdm(trainloader)

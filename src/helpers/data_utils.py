@@ -269,16 +269,17 @@ def load_images(num=None, deterministic=False):
     - class_names: dict mapping integer label to class name
     """
     if deterministic:
-        np.random.seed(1029)
+        np.random.seed(40)
         
-    imagenet_fn = 'data/imagenet_val_25.npz'
+    """imagenet_fn = 'data/imagenet_val_25.npz'
     if not os.path.isfile(imagenet_fn):
         print('file %s not found' % imagenet_fn)
         print('Run the following:')
         print('cd cs7643/datasets')
         print('bash get_imagenet_val.sh')
         assert False, 'Need to download imagenet_val_25.npz'
-    f = np.load(imagenet_fn, allow_pickle=True)
+    f = np.load(imagenet_fn, allow_pickle=True)"""
+    
     f = get_CIFAR100_data(subtract_mean=False)
     X = f['X_val']
     y = f['y_val']
