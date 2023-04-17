@@ -269,7 +269,7 @@ def load_images(num=None, deterministic=False):
     - class_names: dict mapping integer label to class name
     """
     if deterministic:
-        np.random.seed(40)
+        np.random.seed(1029)
         
     """imagenet_fn = 'data/imagenet_val_25.npz'
     if not os.path.isfile(imagenet_fn):
