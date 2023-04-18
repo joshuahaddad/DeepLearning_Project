@@ -74,7 +74,7 @@ class ClassVisualization:
 
         # Randomly initialize the image as a PyTorch Tensor, and also wrap it in
         # a PyTorch Variable.
-        img = torch.randn(1, 3, 224, 224).mul_(1.0).to(device)
+        img = torch.randn(1, 3, 32, 32).mul_(1.0).to(device)
         img_var = Variable(img, requires_grad=True)
 
         ########################################################################
@@ -102,7 +102,7 @@ class ClassVisualization:
         #                             END OF YOUR CODE                         #
         ########################################################################
 
-        for t in tqdm(range(num_iterations), desc="Processing image", leave=True):
+        for t in tqdm.tqdm(range(num_iterations), desc="Processing image", leave=True):
             # Randomly jitter the image a bit; this gives slightly nicer results
             ox, oy = random.randint(0, max_jitter), random.randint(0, max_jitter)
             img.copy_(self.jitter(img, ox, oy))
@@ -132,7 +132,7 @@ class ClassVisualization:
                     plt.axis('off')
         return deprocess(img.cpu())
 
-    def run_program(self, model, prune_config, global_prune=False, folder="l1_unstructured", suffix="Full", verbose=False):
+    def run_program(self, model, prune_config, global_prune=False, folder="l1_unstructured", suffix="Full", verbose=False, retrain=False):
         pruner = Pruner(model, prune_config, global_prune)
         self.pruner = pruner
         
@@ -143,16 +143,16 @@ class ClassVisualization:
         
         X, y, labels, class_names = load_images(num=5, deterministic=True)
         visuals = []
-        for target in tqdm(y, desc="Creating class visualization", leave=True):
+        for target in tqdm.tqdm(y, desc="Creating class visualization", leave=True):
             out = self.create_class_visualization(target, class_names, model, generate_plots=False, folder=folder, suffix=suffix)
             visuals.append(out)
 
         # Create a figure and a subplot with 2 rows and 4 columns
         fig, ax = plt.subplots(2, 5, figsize=(12, 6))
         fig.subplots_adjust(left=0.03, right=0.97, bottom=0.03, top=0.92, wspace=0.2, hspace=0.2)
-
+        fig.suptitle(f"Sparsity Level: {suffix}% Validation Acc: {self.pruner.val_acc}%")
         # Loop over the subplots and plot an image in each one
-        for i in tqdm(range(2), desc="Creating plots", leave=True):
+        for i in tqdm.tqdm(range(2), desc="Creating plots", leave=True):
             for j in range(5):
                 # Load image
                 if i == 0:
@@ -169,7 +169,7 @@ class ClassVisualization:
                     ax[i, j].set_title(labels[j].title(), fontsize=12, y=1.2)
 
         # Save and display the subplots
-        plt.savefig("./visualization/class_viz/{folder}/{suffix}.png")
+        plt.savefig(f"./visualization/class_viz/{folder}/{suffix}.png")
         if verbose:
             plt.show()
 
@@ -183,7 +183,7 @@ if __name__ == '__main__':
     cv = ClassVisualization()
     X, y, labels, class_names = load_images(num=5, deterministic=True)
     visuals = []
-    for target in tqdm(y, desc="Creating class visualization", leave=True):
+    for target in tqdm.tqdm(y, desc="Creating class visualization", leave=True):
         out = cv.create_class_visualization(target, class_names, model, generate_plots=False)
         visuals.append(out)
 
