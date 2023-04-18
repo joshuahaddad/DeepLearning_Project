@@ -22,3 +22,4 @@ global_pruning:
 
 kwargs:
   dim: 1
+  #Random does not have kwargs for "n" like the L1 prunings
