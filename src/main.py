@@ -3,7 +3,7 @@ import torch
 import prune
 from gradcam_visualization import GradCAM
 from  saliency_visualization import SaliencyMap
-import class_visualization as cv
+from class_visualization import ClassVisualization
 import imageio
 import os
 
@@ -36,7 +36,11 @@ def run_saliency(model, config_prefix, folder, retrain=False):
         sv.run_program(model, prune_config=f"{config_prefix}/{i*10}.yaml", suffix=i*10, folder=folder, retrain=retrain)
     generate_gifs(folder, "saliency")
 
-def run_class_viz():
+def run_class_viz(model, config_prefix, folder, retrain=False):
+    for i in range(11):  
+        cv = ClassVisualization()
+        cv.run_program(model, prune_config=f"{config_prefix}/{i*10}.yaml", suffix=i*10, folder=folder, retrain=retrain)
+        return
     return
 
 def generate_gifs(folder, viz_name):
@@ -53,5 +57,5 @@ if __name__ == '__main__':
     
     #run_gradcams(model, prefix, folder, retrain=False)
     # run_saliency(model, prefix, folder)
-    generate_gifs(folder, "saliency")
-    run_class_viz()
+    # generate_gifs(folder, "saliency")
+    run_class_viz(model, prefix, folder, retrain=False)
