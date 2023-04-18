@@ -100,7 +100,7 @@ class GradCAM():
         # Create a figure and a subplot with 2 rows and 4 columns
         fig, ax = plt.subplots(2, 5, figsize=(12, 6))
         fig.subplots_adjust(left=0.03, right=0.97, bottom=0.03, top=0.92, wspace=0.2, hspace=0.2)
-        fig.suptitle(f"Sparsity Level: {suffix}% Validation Acc: {self.pruner.val_acc}")
+        fig.suptitle(f"Sparsity Level: {suffix}% Validation Acc: {self.pruner.val_acc}%")
 
         # Loop over the subplots and plot an image in each one
         for i in tqdm.tqdm(range(2), desc="Creating plots", leave=True):
