@@ -149,7 +149,10 @@ def get_global_params(model, config):
 def get_global_method(config):
     method_dict = {
         'L1Unstructured': prune.L1Unstructured,
-        'LnStructured': prune.LnStructured
+        'LnStructured': prune.LnStructured, 
+        'RandomStructured' : prune.RandomStructured,
+        'RandomUnstructured' : prune.RandomUnstructured
+
     }
     
     return method_dict[config['method']]
@@ -157,7 +160,9 @@ def get_global_method(config):
 def get_local_method(config):
     method_dict = {
         'L1Unstructured': prune.l1_unstructured,
-        'LnStructured': prune.ln_structured
+        'LnStructured': prune.ln_structured,
+        'RandomStructured' : prune.random_structured,
+        'RandomUnstructured' : prune.random_unstructured
     }
     
     return method_dict[config['method']]

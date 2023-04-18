@@ -9,10 +9,17 @@ import os
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-def generate_yamls(config_prefix, folder):
-    with open("./configs/base.yml") as f:
-        config = yaml.safe_load(f)
+def generate_yamls(config_prefix, folder, isRandomBased = False):
     
+    #better option here - other bases? specific logic to drive modifications in newly generated yaml
+    if isRandomBased:
+        with open("./configs/RandomBase.yml") as f:
+            config = yaml.safe_load(f)
+    else:
+        with open("./configs/base.yml") as f:
+            config = yaml.safe_load(f)
+    
+    #specific logic or enums to base on
     config['model'] = "VGG16"
     for i in range(101):
         for k, v in config['local_pruning'].items():
@@ -26,7 +33,8 @@ def run_gradcams(config_prefix, folder, retrain=False):
     model = torch.hub.load("chenyaofo/pytorch-cifar-models", "cifar100_vgg16_bn", pretrained=True)
     model = model.to(device)
     data = []
-    for i in range(11):  
+    for i in range(11):
+        print(i)
         gcv = GradCAM()
         gcv.run_program(model, prune_config=f"{config_prefix}/{i*10}.yaml", suffix=i*10, folder=folder, retrain=retrain)
         
@@ -43,8 +51,12 @@ def generate_gifs(folder):
     imageio.mimwrite(f"./visualization/gifs/{folder}/gradcam.gif", ims, duration=0.5)
     
 if __name__ == '__main__':
+    
+    #generic folder structure here
     prefix = "./configs/local/l1_unstructured"
     folder = "l1_unstructured/retrained"
-    # generate_yamls(prefix, folder)
+
+    generate_yamls(prefix, folder, isRandomBased=True)
+    
     run_gradcams(prefix, folder, retrain=True)
     generate_gifs(folder)
