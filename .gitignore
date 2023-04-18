@@ -1,0 +1,12 @@
+__pycache__
+helpers\__pycache__
+*.pyc
+
+
+src/data/cifar-100-python/file.txt~
+src/data/cifar-100-python/meta
+src/data/cifar-100-python/test
+src/data/cifar-100-python/train
+src/helpers/__pycache__/__init__.cpython-310.pyc
+src/helpers/__pycache__/data_utils.cpython-310.pyc
+src/helpers/__pycache__/image_utils.cpython-310.pyc

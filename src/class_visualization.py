@@ -130,23 +130,21 @@ class ClassVisualization:
                     plt.title('%s\nIteration %d / %d' % (class_name, t + 1, num_iterations))
                     plt.gcf().set_size_inches(4, 4)
                     plt.axis('off')
-                    plt.savefig('visualization/class_visualization_iter_{}'.format(t + 1), bbox_inches='tight')
         return deprocess(img.cpu())
 
-    def run_program(self, prune_config, global_prune=False, suffix="Full", verbose=False):
-        # Check for GPU support
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        model = models.squeezenet1_1(weights='SqueezeNet1_1_Weights.DEFAULT').to(device)
+    def run_program(self, model, prune_config, global_prune=False, folder="l1_unstructured", suffix="Full", verbose=False):
         pruner = Pruner(model, prune_config, global_prune)
-        model = pruner.prune_model()
+        self.pruner = pruner
+        
+        model = self.pruner.prune_model()
         for param in model.parameters():
             param.requires_grad = False
 
-        cv = ClassVisualization()
+        
         X, y, labels, class_names = load_images(num=5, deterministic=True)
         visuals = []
         for target in tqdm(y, desc="Creating class visualization", leave=True):
-            out = cv.create_class_visualization(target, class_names, model, generate_plots=False)
+            out = self.create_class_visualization(target, class_names, model, generate_plots=False, folder=folder, suffix=suffix)
             visuals.append(out)
 
         # Create a figure and a subplot with 2 rows and 4 columns
@@ -171,7 +169,7 @@ class ClassVisualization:
                     ax[i, j].set_title(labels[j].title(), fontsize=12, y=1.2)
 
         # Save and display the subplots
-        plt.savefig("./visualization/class_viz/class_visualization_{suffix}.png")
+        plt.savefig("./visualization/class_viz/{folder}/{suffix}.png")
         if verbose:
             plt.show()
 
