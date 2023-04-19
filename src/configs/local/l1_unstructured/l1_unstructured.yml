@@ -1,7 +1,7 @@
 model: 'VGG16'
 
 # Methods can be prebuilt pytorch methods or custom methods. They are built via the method_dict 
-method: "RandomStructured"
+method: "L1Unstructured"
 
 
 # Local pruning takes each individual layer and prunes using local layer statistics to zero weights
@@ -21,5 +21,6 @@ global_pruning:
   sparsity: 0.20
 
 kwargs:
-  dim: 1
-  #Random does not have kwargs for "n" like the L1 prunings
+  #dim: 1
+  #n: 10
+  amount: 0.20 #same principal as the random unstructured

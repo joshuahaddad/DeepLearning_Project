@@ -1,0 +1,26 @@
+model: 'VGG16'
+
+# Methods can be prebuilt pytorch methods or custom methods. They are built via the method_dict 
+method: "RandomUnstructured"
+
+
+# Local pruning takes each individual layer and prunes using local layer statistics to zero weights
+local_pruning:
+  
+  # 20% of conv weights and 40% of Linear weights are pruned
+  Conv2d: ['weight', 0.20]
+  Linear: ['weight', 0.40]
+
+# Global pruning prunes the entire model to have a set sparsity instead of pruning each layer to have a set sparsity
+global_pruning:
+
+  # Named layers to prune
+  layers: ["conv1", "conv2", "fc1", "fc2", "fc3"]
+
+  # Total sparsity of the model we would like to achieve. Sparsity = 0.20 means 20% of the weights are zeroed out
+  sparsity: 0.20
+
+kwargs:
+  amount: 0.20 #tune this
+  #random unstructured does not have dim - because it is unstructured
+  #Random does not have kwargs for "n" like the L1 prunings

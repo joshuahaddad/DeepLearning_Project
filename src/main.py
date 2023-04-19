@@ -9,7 +9,7 @@ import os
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-def generate_yamls(config_prefix, folder, isRandomBased = False):
+def generate_yamls(config_prefix, folder='', isRandomBased = False):
     
     #better option here - other bases? specific logic to drive modifications in newly generated yaml
     if isRandomBased:
