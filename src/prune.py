@@ -134,7 +134,7 @@ class Pruner():
                 loop.set_description(f"Epoch [{epoch}/{NUM_EPOCHS}]")
                 loop.set_postfix(loss=loss)
                 
-        self.val_acc = self.validate_model()
+        self.validate_model()
         
             
 
