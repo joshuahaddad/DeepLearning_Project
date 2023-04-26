@@ -11,13 +11,14 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def generate_yamls(config_prefix, folder='', isRandomBased = False):
     
-    #better option here - other bases? specific logic to drive modifications in newly generated yaml
-    if isRandomBased:
-        with open("./configs/RandomBase.yml") as f:
-            config = yaml.safe_load(f)
-    else:
-        with open("./configs/base.yml") as f:
-            config = yaml.safe_load(f)
+    #base_path = "./configs/base.yml"
+    #base_path = "./configs/local/l1_unstructured/l1_unstructured_base.yml"
+    base_path = "./configs/local/ln_structured/ln_structured_base.yml"
+    #base_path = "./configs/local/random_structured/random_structured_base.yml"
+    #base_path = "./configs/local/random_unstructured/random_unstructured_base.yml"
+
+    with open(base_path) as f:
+        config = yaml.safe_load(f)
     
     #specific logic or enums to base on
     config['model'] = "VGG16"
@@ -59,12 +60,22 @@ def generate_gifs(folder, viz_name):
 if __name__ == '__main__':
     
     #generic folder structure here
-    prefix = "./configs/local/l1_unstructured"
-    folder = "l1_unstructured/non-retrained"
-    # generate_yamls(prefix)
+    prefix = "./configs/local/ln_structured"
+    folder = "ln_structured/non-retrained"
+    
+    #prefix = "./configs/local/random_structured"
+    #folder = "random_structured/non-retrained"
+    
+    #prefix = "./configs/local/random_unstructured"
+    #folder = "random_unstructured/non-retrained"
+
+    #prefix = "./configs/local/l1_unstructured"
+    #folder = "l1_unstructured/non-retrained"
+
+    generate_yamls(prefix)
     model = torch.hub.load("chenyaofo/pytorch-cifar-models", "cifar100_vgg16_bn", pretrained=True)
     model = model.to(device)
     
-    run_gradcams(model, prefix, folder, retrain=False)
-    run_saliency(model, prefix, folder)
-    run_class_viz(model, prefix, folder, retrain=False)
+    run_gradcams(model, prefix, folder, retrain=True)
+    run_saliency(model, prefix, folder, retrain=True)
+    run_class_viz(model, prefix, folder, retrain=True)

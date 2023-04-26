@@ -1,0 +1,20 @@
+global_pruning:
+  layers:
+  - conv1
+  - conv2
+  - fc1
+  - fc2
+  - fc3
+  sparsity: 0.2
+kwargs:
+  dim: 1
+  n: 1
+local_pruning:
+  Conv2d:
+  - weight
+  - 0.68
+  Linear:
+  - weight
+  - 0.68
+method: LnStructured
+model: VGG16
